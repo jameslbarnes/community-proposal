@@ -2,92 +2,158 @@
 
 An interactive proposal site for a membership community, featuring a 3D knowledge graph visualization with a botanical/garden theme.
 
-Built with Claude Code. Adapted from [Eventually Everything Connects](https://eventuallyeverythingconnects.com).
+Built with [Claude Code](https://claude.ai/code).
 
-## Quick Start
+## What This Does
 
-### 1. Set up the project
+You give Claude your raw material — pitch decks, notes, testimonials, workshop outlines, whatever you have — and it builds an interactive 3D knowledge graph that maps your community's pillars, people, events, themes, and offerings. Then it writes the proposal sections for you, pulling from the graph.
+
+The result is a web app where visitors can explore your community as an interconnected living system, not a flat pitch deck.
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18+)
+- [Claude Code](https://claude.ai/code) CLI installed
+
+## Step-by-Step: From Zero to Proposal
+
+### 1. Clone and install
 
 ```bash
+git clone https://github.com/jameslbarnes/community-proposal.git
+cd community-proposal
 npm install
 ```
 
-### 2. Feed Claude your source material
+### 2. Gather your source material
 
-Drop your existing content into `sources/` — pitch decks, notes, essays, workshop outlines, testimonials, anything. Then:
+Collect everything you have about your community into a folder. It can be anywhere on your machine. Examples of good material:
+
+- Pitch decks, one-pagers, slide decks
+- Workshop outlines, course descriptions, curriculum
+- Member testimonials, feedback, survey results
+- Website copy, landing pages, newsletters
+- Business plans, pricing docs, financial models
+- Competitor research, market analysis
+- Notes, brainstorms, journal entries
+- Conversation transcripts, interview recordings
+
+Messy is fine. Overlapping is fine. Contradictory is fine. The pipeline handles it.
+
+### 3. Open Claude Code in this project
+
+```bash
+claude
+```
+
+### 4. Ingest your material
+
+Point Claude at your files one at a time, or ask it to crawl a whole folder:
 
 ```
-/ingest sources/my-pitch-deck.pdf
-/ingest sources/workshop-notes.md
-/ingest "Here's a testimonial from a member: ..."
+/ingest /path/to/pitch-deck.pdf
+/ingest /path/to/workshop-notes.md
+/ingest /path/to/testimonials.txt
 ```
 
-Claude will classify the material, map it to the proposal structure, and ask what to do.
+Or point at a folder:
 
-### 3. Build the knowledge graph
+```
+Can you read through everything in /path/to/my/community-docs/ and ingest the key materials?
+```
 
-Once you have material ingested:
+Or paste text directly:
+
+```
+/ingest Here's what a member said: "I came for the content but stayed for the people."
+```
+
+For each piece, Claude classifies it, maps it to the proposal structure, identifies what's novel, and asks what to do. **Ingest everything before moving on.**
+
+### 5. Build the knowledge graph
 
 ```
 /build-graph
 ```
 
-Claude will crawl your sources, identify pillars/people/events/themes, and build the graph interactively with you.
+Claude crawls all ingested sources and proposes:
+- **Content pillars** — the core tracks of your community (you approve these)
+- **People** — founders, facilitators, advisors
+- **Events** — retreats, launches, signature experiences
+- **Themes** — values, principles, outcomes
+- **Organizations** — partners, comparable communities
+- **Resources** — courses, tools, frameworks
 
-### 4. Write the proposal sections
+Each node gets a vivid description and connections to related nodes. This is collaborative — Claude proposes, you approve and refine.
+
+### 6. Build the 3D visualization
+
+Ask Claude to build the visual layer:
+
+```
+Build the 3D knowledge graph visualization using the garden/botanical theme from CLAUDE.md.
+```
+
+Claude creates the React Three Fiber scene: force-directed layout, garden background shader, flower-like nodes, vine edges, floating pollen particles, camera rig, interaction layer.
+
+### 7. Write the proposal sections
 
 ```
 /write-sections
-/write-sections overview
-/write-sections founder
 ```
 
-Claude drafts React components for each section, pulling from the graph data.
+Or one at a time:
 
-### 5. Run the dev server
+```
+/write-sections overview
+/write-sections founder
+/write-sections pillars
+/write-sections experience
+/write-sections landscape
+/write-sections growth
+```
+
+Each section becomes a React component displayed as a panel alongside the 3D graph.
+
+### 8. Run the dev server
 
 ```bash
 npm run dev
 ```
 
-### 6. Iterate
+### 9. Iterate
 
-The power of this approach is iteration. Keep ingesting material, expanding the graph, and refining sections. The 3D visualization updates live as the graph grows.
+Keep feeding material, expanding the graph, and refining sections. The site evolves with your thinking.
 
 ## Project Structure
 
 ```
-├── CLAUDE.md                      # Claude's instructions for this project
-├── .claude/commands/
-│   ├── ingest.md                  # /ingest — source material pipeline
-│   ├── build-graph.md             # /build-graph — construct the knowledge graph
-│   └── write-sections.md          # /write-sections — generate proposal content
-├── sources/                       # Your raw material goes here
-├── scripts/
-│   └── graph-add.js               # CLI for managing graph.json
-├── src/
-│   ├── data/
-│   │   ├── graph.json             # The knowledge graph
-│   │   └── quotes.json            # Testimonials and pullquotes
-│   └── ...                        # React components (Claude builds these)
-└── public/
-    └── graph-context.json         # Flattened graph for external AI agents
+CLAUDE.md                          # Full instructions for Claude (read this first)
+.claude/commands/
+  ingest.md                        # /ingest slash command
+  build-graph.md                   # /build-graph slash command
+  write-sections.md                # /write-sections slash command
+sources/                           # Your raw material (after ingestion)
+scripts/
+  graph-add.js                     # CLI for managing graph.json
+src/
+  data/graph.json                  # The knowledge graph (starts empty)
+  data/quotes.json                 # Testimonials and pullquotes
+  App.tsx                          # Main app shell
+  store.ts                         # State management (zustand)
 ```
 
 ## The Workflow
 
 ```
-Source Material → /ingest → /build-graph → /write-sections → Interactive Proposal
-     ↑                                                              |
-     └──────────── iterate with Claude ←────────────────────────────┘
+Your Material → /ingest → /build-graph → /write-sections → Interactive 3D Proposal
+      ↑                                                              |
+      └──────────────── keep iterating with Claude ←─────────────────┘
 ```
 
 ## Customization
 
-- **Visual theme:** The default is a botanical garden (flowers, vines, warm earth tones). Change the shader in `GardenBackground.tsx` and colors in `utils/colors.ts`.
-- **Node types:** Adapt the schema in CLAUDE.md. Current defaults are `pillar`, `person`, `organization`, `event`, `theme`, `place`, `resource`.
-- **Sections:** The 6 proposal sections can be renamed/reordered in `App.tsx`.
-
-## Credits
-
-Architecture and tooling adapted from James Barnes's book proposal, [Eventually Everything Connects](https://eventuallyeverythingconnects.com).
+- **Visual theme:** Garden/botanical by default. Change colors in CLAUDE.md, Claude builds the shaders.
+- **Node types:** `pillar`, `person`, `organization`, `event`, `theme`, `place`, `resource` — or propose new ones.
+- **Sections:** 6 default sections, renameable/reorderable.
+- **Everything else:** It's just React + Three.js. Ask Claude to change anything.

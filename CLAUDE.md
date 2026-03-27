@@ -163,12 +163,138 @@ node scripts/graph-add.js check-id pl-wellness
 node scripts/graph-add.js list-nodes pillar
 ```
 
-## Working With Claude
+## Getting Started: Hydrating From Source Material
 
-This project is designed to be built interactively with Claude. The workflow:
+This is a blank canvas. To turn it into your proposal, follow these steps in order.
 
-1. **Ingest source material** — Use `/ingest` to feed in your existing content, notes, writings
-2. **Build the graph** — Claude helps identify nodes and edges from your material
-3. **Write proposal sections** — Claude drafts section content from the graph + sources
-4. **Iterate visually** — Adjust the 3D scene, colors, animations with Claude's help
-5. **Generate graph-context.json** — Flatten the graph for external AI agents to explore
+### Step 0: Install dependencies
+
+```bash
+npm install
+```
+
+### Step 1: Gather your source material
+
+Collect everything you have about your community into a single folder. This can be anywhere on your machine — it doesn't have to be inside this project. The more raw material, the better. Examples:
+
+- Pitch decks, slide decks, one-pagers
+- Notes, brainstorms, journal entries
+- Workshop outlines, course descriptions, curriculum docs
+- Member testimonials, feedback, survey results
+- Website copy, landing pages, email sequences
+- Business plans, financial models, pricing docs
+- Competitor research, market analysis
+- Social media posts, newsletters, blog posts
+- Conversation transcripts, interview notes
+- Photos, mood boards (describe them to Claude)
+
+It's OK if the material is messy, overlapping, or contradictory. That's what the pipeline is for.
+
+### Step 2: Ingest the material
+
+Point Claude at your source folder. You can ingest individual files or describe things verbally:
+
+```
+/ingest /path/to/your/pitch-deck.pdf
+/ingest /path/to/your/workshop-notes.md
+/ingest /path/to/your/testimonials.txt
+```
+
+You can also paste text directly:
+
+```
+/ingest Here's what a member said after the retreat: "I came for the content but stayed for the people. The Wednesday circles changed how I show up at work."
+```
+
+Or point at an entire folder and ask Claude to crawl it:
+
+```
+Can you read through everything in /path/to/my/community-docs/ and ingest the key materials?
+```
+
+For each piece of material, Claude will:
+1. Classify it (what type of document, who's speaking, what it covers)
+2. Map it to the proposal structure (which pillars/sections it touches)
+3. Identify what's novel vs. redundant
+4. Ask you whether to file it and update the graph
+
+**Do this for all your material before moving to Step 3.** The graph gets richer with each ingestion.
+
+### Step 3: Build the knowledge graph
+
+Once your material is ingested, build the graph:
+
+```
+/build-graph
+```
+
+Claude will:
+1. Crawl all ingested sources
+2. Propose content pillars (the core tracks of your community) — **you approve these**
+3. Identify people, organizations, events, themes, places, resources
+4. Create nodes with vivid descriptions
+5. Build edges (connections between everything)
+6. Write LLM prompts for each node (conversation starters for the interactive site)
+
+This is collaborative. Claude proposes, you approve, refine, correct. The graph is the backbone of everything — spend time here getting it right.
+
+### Step 4: Build the 3D visualization
+
+Now ask Claude to build the visual site:
+
+```
+Build the 3D knowledge graph visualization. Use the garden/botanical theme described in CLAUDE.md. Start with the GraphScene, GardenBackground shader, NodeInstances, EdgeLines, and force layout.
+```
+
+Claude will create the React Three Fiber components, the force-directed layout, the background shader, particle system, and all the interactive elements. The architecture is documented in the Key Files section above.
+
+### Step 5: Write the proposal sections
+
+Generate the actual proposal content:
+
+```
+/write-sections
+```
+
+Or one at a time:
+
+```
+/write-sections overview
+/write-sections founder
+/write-sections pillars
+```
+
+Claude writes each section as a React component, pulling from the graph data and ingested sources. Each section appears as a panel alongside the 3D graph.
+
+### Step 6: Iterate
+
+This is where it gets good. You can:
+
+- **Ingest more material** as you create it — new testimonials, updated pitch, revised pricing
+- **Refine the graph** — ask Claude to add/remove/update nodes and edges
+- **Rewrite sections** — `/write-sections overview` with new direction
+- **Adjust visuals** — change the color palette, animation timing, background shader
+- **Add features** — search, URL deep linking, mobile nav, intro sequence
+
+The graph and the site evolve together. Each new piece of material can ripple through the whole proposal.
+
+### Quick Reference: Slash Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `/ingest <file or text>` | Classify, analyze, and file source material into the graph |
+| `/build-graph` | Crawl all sources and construct/expand the knowledge graph |
+| `/write-sections [name]` | Generate proposal section content from the graph |
+
+### Quick Reference: Graph CLI
+
+```bash
+node scripts/graph-add.js add-node '{"id":"pl-wellness","type":"pillar","label":"Wellness","description":"...","x":0,"y":0}'
+node scripts/graph-add.js add-edge '{"source":"pl-wellness","target":"p-founder","type":"led_by","layer":"narrative","weight":5}'
+node scripts/graph-add.js update-node pl-wellness '{"description":"Updated description"}'
+node scripts/graph-add.js check-id pl-wellness
+node scripts/graph-add.js list-nodes pillar
+node scripts/graph-add.js list-nodes                    # all nodes
+node scripts/graph-add.js list-edges                    # all edges
+node scripts/graph-add.js remove-node pl-wellness       # removes node + all its edges
+```
